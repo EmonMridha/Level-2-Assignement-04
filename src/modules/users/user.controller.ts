@@ -17,11 +17,37 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
     const payload = await req.body;
-    const loginUser = await userService.loginUser(payload)
+    const { accessToken, refreshToken } = await userService.loginUser(payload)
+
+    // Sending the accessToken to cookie
+    res.cookie(
+        "accessToken",
+        accessToken,
+        {
+            httpOnly: true,
+            secure: false,
+            sameSite: "none",
+            maxAge: 1000 * 60 * 60 * 24 // 24 hour
+        }
+    )
+
+    // Sending the refreshToken to cookie
+    res.cookie(
+        "refreshToken",
+        refreshToken,
+        {
+            httpOnly: true,
+            secure: false,
+            sameSite: "none",
+            maxAge: 1000 * 60 * 60 * 24 * 7 // 7 days
+        }
+    )
+
+
     res.status(httpStatus.CREATED).json({
         success: true,
         message: "User logged in successfully",
-        data: loginUser
+        data: { accessToken, refreshToken }
     })
 })
 
