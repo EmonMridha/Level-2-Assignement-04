@@ -1,23 +1,17 @@
-model User {
-    id           String     @id @default(uuid())
-    name         String     @db.VarChar(255)
-    email        String     @unique
-    password     String
-    phone        String?
-    profilePhoto String?
-    role         Role       @default(TENANT)
-    status       UserStatus @default(ACTIVE)
-    createdAt    DateTime   @default(now())
-    updatedAt    DateTime   @updatedAt
-}
+model Review {
+    id String @id @default(uuid())
 
-enum Role {
-    TENANT
-    LANDLORD
-    ADMIN
-}
+    rating  Int
+    comment String
 
-enum UserStatus {
-    ACTIVE
-    BLOCKED
+    tenantId String
+    tenant   User   @relation(fields: [tenantId], references: [id])
+
+    propertyId String
+    property   Property @relation(fields: [propertyId], references: [id])
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@map("reviews")
 }
