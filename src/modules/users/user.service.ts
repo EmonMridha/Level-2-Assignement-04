@@ -2,6 +2,8 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
 import { IUser } from "./userInterface";
+import jwt, { SignOptions } from "jsonwebtoken"
+import { jwtUtils } from "../../utils/jwt";
 
 
 const createUser = async (payload: IUser) => {
@@ -37,25 +39,51 @@ const createUser = async (payload: IUser) => {
 
 const loginUser = async (payload: { email: string, password: string }) => {
     const { email, password } = payload
-    const userInDb = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.findUniqueOrThrow({
         where: { email: email }
     })
 
-    const isPasswordMatched = await bcrypt.compare(password, userInDb.password)
+    const isPasswordMatched = await bcrypt.compare(password, user.password)
 
     if (!isPasswordMatched) {
         throw new Error("Password is incorrect")
     }
 
+    const jwtPayload = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+    }
+
+    // Creating accessToken
+    const accessToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_access_secret,
+        config.jwt_access_expires_in as SignOptions
+    )
+
+    // Creating refreshToken
+    const refreshToken = jwtUtils.createToken(
+        jwtPayload,
+        config.jwt_refresh_secret,
+        config.jwt_refresh_expires_in as SignOptions
+    )
+
     // Creating jwt payLoad using user data
     // const jwtPayload = {
-    //     id: userInDb.id,
-    //     name: userInDb.name,
-    //     email: userInDb.email,
-    //     role: userInDb.role
+    //     id: user.id,
+    //     name: user.name,
+    //     email: user.email,
+    //     role: user.role
     // }
 
     // Creating accessToken
+
+    return {
+        accessToken,
+        refreshToken
+    }
 }
 
 export const userService = {

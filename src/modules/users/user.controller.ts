@@ -16,8 +16,8 @@ const createUser = catchAsync(async (req: Request, res: Response) => {
 })
 
 const loginUser = catchAsync(async (req: Request, res: Response) => {
-    const payload = req.body;
-    const loginUser = userService.loginUser(payload)
+    const payload = await req.body;
+    const loginUser = await userService.loginUser(payload)
     res.status(httpStatus.CREATED).json({
         success: true,
         message: "User logged in successfully",
