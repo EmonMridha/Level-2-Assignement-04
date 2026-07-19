@@ -2,9 +2,9 @@ import { Request, Response } from "express";
 import httpStatus from "http-status"
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
-import jwt from "jsonwebtoken"
 import config from "../../config";
 import { jwtUtils } from "../../utils/jwt";
+import { JwtPayload } from "jsonwebtoken";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
@@ -57,10 +57,25 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
     const { accessToken } = req.cookies;
 
+    if (!accessToken) {
+        throw new Error("Access token is missing");
+    }
+
     // verifyToken 
     const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret)
 
-    res.send(verifiedToken)
+    if (typeof verifiedToken === "string") {
+        throw new Error("Invalid token")
+    }
+
+    const user = await userService.myProfile(verifiedToken.id)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "User logged in successfully",
+        data: user
+    })
+
 })
 
 export const userController = {

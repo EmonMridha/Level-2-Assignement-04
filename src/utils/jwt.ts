@@ -12,7 +12,7 @@ const verifyToken = (token: string, secret: string) => {
         const verifiedToken = jwt.verify(token, secret);
         return verifiedToken
     } catch (error:any) {
-        throw new Error("Invalid Token")
+        throw new Error(error.message)
     }
 }
 
