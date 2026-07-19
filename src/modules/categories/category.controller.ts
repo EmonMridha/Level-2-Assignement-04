@@ -26,18 +26,19 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
-// const updateCategory = async (req: Request, res: Response) => {
-//     // Admin
-//     const result = await req.body;
-//     const { name } = result;
-//     const updateCat = await categoryService.updateCategory({ name })
+const updateCategory = catchAsync(async (req: Request, res: Response) => {
+    // Admin
+    const id = req.params.id
+    const result = await req.body;
+    const { name } = result;
+    const updateCat = await categoryService.updateCategory(id as string, { name })
 
-//     res.status(200).json({
-//         success: true,
-//         message: "Category updated successfully",
-//         data: updateCat
-//     })
-// }
+    res.status(200).json({
+        success: true,
+        message: "Category updated successfully",
+        data: updateCat
+    })
+})
 
 // const deleteCategory = async (req: Request, res: Response) => {
 //     // Admin
@@ -46,6 +47,6 @@ const createCategory = catchAsync(async (req: Request, res: Response) => {
 export const categoryController = {
     getAllCategory,
     createCategory,
-    // updateCategory,
+    updateCategory,
     // deleteCategory
 }
