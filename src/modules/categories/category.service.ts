@@ -78,7 +78,12 @@ const updateCategory = async (id: string, payload: { name: string }
 
 // Admin
 const deleteCategory = async (id: string) => {
-
+    const deleteCat = await prisma.category.delete({
+        where: {
+            id: id
+        }
+    })
+    return deleteCat
 }
 
 export const categoryService = {
