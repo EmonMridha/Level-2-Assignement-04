@@ -11,6 +11,10 @@ const createUser = async (payload: IUser) => {
     const { name, email, password, phone } = payload;
     const role = payload.role?.toUpperCase() as Role;
 
+    if (!Object.values(Role).includes(role)) {
+        throw new Error("Invalid role");
+    }
+
     if (role === Role.ADMIN) {
         throw new Error("You cannot register as an admin");
     }
@@ -21,6 +25,10 @@ const createUser = async (payload: IUser) => {
 
     if (!email || email.trim() === "") {
         throw new Error("Email is required");
+    }
+
+    if (phone && phone.trim() === "") {
+        throw new Error("Phone number cannot be empty");
     }
 
     if (!password || password.trim() === "") {
