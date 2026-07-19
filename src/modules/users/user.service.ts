@@ -7,8 +7,27 @@ import { jwtUtils } from "../../utils/jwt";
 
 
 const createUser = async (payload: IUser) => {
-    const { name, email, password } = payload;
+    const { name, email, password, role, phone } = payload;
 
+    if (!name || name.trim() === "") {
+        throw new Error("Name is required");
+    }
+
+    if (!email || email.trim() === "") {
+        throw new Error("Email is required");
+    }
+
+    if (!password || password.trim() === "") {
+        throw new Error("Password is required");
+    }
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
+        throw new Error("Invalid email address");
+    }
+
+    // Check if user already exists
     const isUserExists = await prisma.user.findUnique({
         where: { email }
     })
@@ -17,6 +36,7 @@ const createUser = async (payload: IUser) => {
         throw new Error("This user already exists")
     }
 
+    // Hashing the pass
     const hashedPassword = await bcrypt.hash(password, Number(config.bcrypt_salt_rounds))
 
     // creating user
@@ -24,7 +44,9 @@ const createUser = async (payload: IUser) => {
         data: {
             name,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            role,
+            phone
         }
     });
 
@@ -39,6 +61,16 @@ const createUser = async (payload: IUser) => {
 
 const loginUser = async (payload: { email: string, password: string }) => {
     const { email, password } = payload
+
+    if (!email || email.trim() === "") {
+        throw new Error("Email is required");
+    }
+
+    if (!password || password.trim() === "") {
+        throw new Error("Password is required");
+    }
+
+    // Finding user by email
     const user = await prisma.user.findUniqueOrThrow({
         where: { email: email }
     })
@@ -70,23 +102,22 @@ const loginUser = async (payload: { email: string, password: string }) => {
         config.jwt_refresh_expires_in as SignOptions
     )
 
-    // Creating jwt payLoad using user data
-    // const jwtPayload = {
-    //     id: user.id,
-    //     name: user.name,
-    //     email: user.email,
-    //     role: user.role
-    // }
-
-    // Creating accessToken
-
     return {
         accessToken,
         refreshToken
     }
 }
 
+const myProfile = async (userId: string) => {
+    const user = await prisma.user.findUniqueOrThrow({
+        where: { id: userId },
+        omit: { password: true }
+    })
+    return user
+}
+
 export const userService = {
     createUser,
-    loginUser
+    loginUser,
+    myProfile
 }

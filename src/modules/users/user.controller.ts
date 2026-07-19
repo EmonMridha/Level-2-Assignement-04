@@ -2,6 +2,9 @@ import { Request, Response } from "express";
 import httpStatus from "http-status"
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
+import jwt from "jsonwebtoken"
+import config from "../../config";
+import { jwtUtils } from "../../utils/jwt";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 
@@ -51,7 +54,17 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const getMyProfile = catchAsync(async (req: Request, res: Response) => {
+    const { accessToken } = req.cookies;
+
+    // verifyToken 
+    const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret)
+
+    res.send(verifiedToken)
+})
+
 export const userController = {
     createUser,
-    loginUser
+    loginUser,
+    getMyProfile
 }
