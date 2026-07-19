@@ -4,10 +4,16 @@ import config from "../../config";
 import { IUser } from "./userInterface";
 import jwt, { SignOptions } from "jsonwebtoken"
 import { jwtUtils } from "../../utils/jwt";
+import { Role } from "../../../generated/prisma/enums";
 
 
 const createUser = async (payload: IUser) => {
-    const { name, email, password, role, phone } = payload;
+    const { name, email, password, phone } = payload;
+    const role = payload.role?.toUpperCase() as Role;
+
+    if (role === Role.ADMIN) {
+        throw new Error("You cannot register as an admin");
+    }
 
     if (!name || name.trim() === "") {
         throw new Error("Name is required");
@@ -56,7 +62,6 @@ const createUser = async (payload: IUser) => {
         omit: { password: true }
     })
     return user
-
 }
 
 const loginUser = async (payload: { email: string, password: string }) => {

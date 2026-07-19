@@ -1,5 +1,17 @@
 import { Request, Response } from "express";
 import { propertyService } from "./properties.service";
+import { catchAsync } from "../../utils/catchAsync";
+
+const createProperty = catchAsync(async (req: Request, res: Response) => {
+    const payload = req.body
+    const landLordId = req.user?.id
+    const createProperty = await propertyService.createProperty(landLordId as string, payload)
+    res.status(201).json({
+        success: true,
+        message: "Property created successfully",
+        data: createProperty
+    })
+})
 
 const getAllProperties = async (req: Request, res: Response) => {
     const properties = await propertyService.getAllProperty();
@@ -27,6 +39,7 @@ const getSingleProperty = async (req: Request, res: Response) => {
 }
 
 export const propertyController = {
+    createProperty,
     getAllProperties,
-    getSingleProperty
+    getSingleProperty,
 }
