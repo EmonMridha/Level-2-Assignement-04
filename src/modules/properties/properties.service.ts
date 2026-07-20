@@ -310,9 +310,33 @@ const updateProperty = async (id: string, landlordId: string, updates: IUpdatePr
     return result;
 };
 
+const deleteProperty = async (id: string, landlordId: string) => {
+
+    const property = await prisma.property.findUniqueOrThrow({
+        where: {
+            id: id
+        }
+    });
+
+    if (!property) {
+        throw new Error("Property doesn't exist")
+    }
+
+    if (property.landlordId !== landlordId) {
+        throw new Error("You are not authorized to delete this property");
+    }
+
+    const deleteProp = await prisma.property.delete({
+        where: {
+            id
+        }
+    })
+}
+
 export const propertyService = {
     createProperty,
     getAllProperty,
     getSingleProperty,
-    updateProperty
+    updateProperty,
+    deleteProperty
 }
