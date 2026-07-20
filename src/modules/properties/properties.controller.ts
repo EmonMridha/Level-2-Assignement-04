@@ -14,9 +14,10 @@ const createProperty = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getAllProperties = async (req: Request, res: Response) => {
-    const properties = await propertyService.getAllProperty();
+    const properties = await propertyService.getAllProperty(req.query);
     res.status(200).json({
         success: true,
+        message: "Property retrieved successfully",
         data: properties
     });
 }

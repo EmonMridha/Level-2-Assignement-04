@@ -2,8 +2,6 @@ import { Request, Response } from "express";
 import httpStatus from "http-status"
 import { userService } from "./user.service";
 import { catchAsync } from "../../utils/catchAsync";
-import config from "../../config";
-import { jwtUtils } from "../../utils/jwt";
 
 const createUser = catchAsync(async (req: Request, res: Response) => {
 

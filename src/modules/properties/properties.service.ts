@@ -128,11 +128,50 @@ const createProperty = async (
     return property;
 };
 
-const getAllProperty = async () => {
+const getAllProperty = async (query: {
+    city?: string;
+    minPrice?: string;
+    maxPrice?: string;
+    category?: string;
+}) => {
+
+    const filter: any = {
+        isAvailable: true
+    };
+
+    // Filter by city
+    if (query.city) {
+        filter.city = {
+            contains: query.city,
+            mode: "insensitive"
+        };
+    }
+
+    // Filter by price
+    if (query.minPrice || query.maxPrice) {
+        filter.rent = {};
+
+        if (query.minPrice) {
+            filter.rent.gte = Number(query.minPrice);
+        }
+
+        if (query.maxPrice) {
+            filter.rent.lte = Number(query.maxPrice);
+        }
+    }
+
+    // Filter by category
+    if (query.category) {
+        filter.category = {
+            name: {
+                equals: query.category,
+                mode: "insensitive"
+            }
+        };
+    }
+
     const properties = await prisma.property.findMany({
-        where: {
-            isAvailable: true
-        },
+        where: filter,
         include: {
             landlord: {
                 select: {
@@ -142,10 +181,10 @@ const getAllProperty = async () => {
             },
             category: true
         }
-    })
+    });
 
-    return properties
-}
+    return properties;
+};
 
 const getSingleProperty = async (id: string) => {
     const property = await prisma.property.findUniqueOrThrow({
