@@ -39,8 +39,31 @@ const getSingleProperty = async (req: Request, res: Response) => {
     });
 }
 
+const updateProperty = catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id;
+
+    if (!id) {
+        throw new Error("Property id is required");
+    }
+
+    const landlordId = req.user!.id;
+
+    const updatedProperty = await propertyService.updateProperty(
+        id as string,
+        landlordId,
+        req.body
+    );
+
+    res.status(200).json({
+        success: true,
+        message: "Property updated successfully",
+        data: updatedProperty
+    });
+});
+
 export const propertyController = {
     createProperty,
     getAllProperties,
     getSingleProperty,
+    updateProperty
 }

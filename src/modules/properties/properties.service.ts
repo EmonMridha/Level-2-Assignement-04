@@ -1,5 +1,5 @@
 import { prisma } from "../../lib/prisma"
-import { IProperty } from "./properties.interface";
+import { IProperty, IUpdateProperty } from "./properties.interface";
 
 const createProperty = async (
     landlordId: string,
@@ -217,8 +217,102 @@ const getSingleProperty = async (id: string) => {
     return property
 }
 
+const updateProperty = async (id: string, landlordId: string, updates: IUpdateProperty) => {
+
+    const property = await prisma.property.findUniqueOrThrow({
+        where: {
+            id: id
+        }
+    });
+
+    if (property.landlordId !== landlordId) {
+        throw new Error("You are not authorized to update this property");
+    }
+    if (updates.title !== undefined) {
+        if (!updates.title.trim()) {
+            throw new Error("Title cannot be empty");
+        }
+    }
+
+    if (updates.description !== undefined) {
+        if (!updates.description.trim()) {
+            throw new Error("Description cannot be empty");
+        }
+    }
+
+    if (updates.address !== undefined) {
+        if (!updates.address.trim()) {
+            throw new Error("Address cannot be empty");
+        }
+    }
+
+    if (updates.city !== undefined) {
+        if (!updates.city.trim()) {
+            throw new Error("City cannot be empty");
+        }
+    }
+
+    if (updates.rent !== undefined) {
+        if (typeof updates.rent !== "number" || updates.rent <= 0) {
+            throw new Error("Rent must be a positive number");
+        }
+    }
+
+    if (updates.bedrooms !== undefined) {
+        if (typeof updates.bedrooms !== "number" || updates.bedrooms < 1) {
+            throw new Error("Bedrooms must be at least 1");
+        }
+    }
+
+    if (updates.bathrooms !== undefined) {
+        if (typeof updates.bathrooms !== "number" || updates.bathrooms < 1) {
+            throw new Error("Bathrooms must be at least 1");
+        }
+    }
+
+    if (updates.amenities !== undefined) {
+        if (!Array.isArray(updates.amenities)) {
+            throw new Error("Amenities must be an array");
+        }
+    }
+
+    if (updates.categoryId !== undefined) {
+        const category = await prisma.category.findUnique({
+            where: { id: updates.categoryId }
+        });
+
+        if (!category) {
+            throw new Error("Category not found");
+        }
+    }
+
+    if (
+        updates.isAvailable !== undefined &&
+        typeof updates.isAvailable !== "boolean"
+    ) {
+        throw new Error("isAvailable must be a boolean");
+    }
+
+    // Updating property
+    const result = await prisma.property.update({
+        where: { id },
+        data: updates,
+        include: {
+            landlord: {
+                select: {
+                    name: true,
+                    email: true
+                }
+            },
+            category: true
+        }
+    });
+    return result;
+};
+
 export const propertyService = {
     createProperty,
     getAllProperty,
-    getSingleProperty
+    getSingleProperty,
+    updateProperty
 }

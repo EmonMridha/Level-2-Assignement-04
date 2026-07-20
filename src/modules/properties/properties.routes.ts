@@ -9,7 +9,7 @@ const router = Router();
 router.post("/", auth(Role.ADMIN, Role.LANDLORD), propertyController.createProperty)
 
 router.get("/", auth(Role.ADMIN, Role.LANDLORD, Role.TENANT), propertyController.getAllProperties)
-
 router.get("/:id", propertyController.getSingleProperty)
+router.patch("/:id", auth(Role.LANDLORD), propertyController.updateProperty)
 
 export const propertyRoutes = router
