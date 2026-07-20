@@ -54,24 +54,18 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getMyProfile = catchAsync(async (req: Request, res: Response) => {
-    const { accessToken } = req.cookies;
 
-    if (!accessToken) {
-        throw new Error("Access token is missing");
+    if (!req.user) {
+        throw new Error("Unauthorized");
     }
 
-    // verifyToken 
-    const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret)
+    const id = req.user?.id; // Getting the user id from the request
 
-    if (typeof verifiedToken === "string") {
-        throw new Error("Invalid token")
-    }
-
-    const user = await userService.myProfile(verifiedToken.id)
+    const user = await userService.myProfile(id as string)
 
     res.status(httpStatus.OK).json({
         success: true,
-        message: "User logged in successfully",
+        message: "User data retrieved successfully",
         data: user
     })
 
