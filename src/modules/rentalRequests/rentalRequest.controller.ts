@@ -29,6 +29,26 @@ const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+
+    const requestId = req.params.id;
+
+    if (!requestId) {
+        throw new Error("Rental request id is required");
+    }
+
+    const { status } = req.body;
+
+    const result = await rentalRequestService.updateRentalRequest(requestId as string, userId as string, status);
+
+    res.status(200).json({
+        success: true,
+        message: "Rental request updated successfully",
+        data: result
+    });
+});
+
 // // Tenant
 // const getSingleRentalRequest = catchAsync(async (req: Request, res: Response) => {
 //     const tenantId = req.user!.id;
@@ -65,32 +85,11 @@ const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
 //     });
 // });
 
-// // Landlord
-// const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response) => {
-//     const landlordId = req.user!.id;
-//     const id = req.params.id;
-
-//     if (!id) {
-//         throw new Error("Rental request id is required");
-//     }
-
-//     const result = await rentalRequestService.updateRentalRequestStatus(
-//         id,
-//         landlordId,
-//         req.body
-//     );
-
-//     res.status(httpStatus.OK).json({
-//         success: true,
-//         message: "Rental request updated successfully",
-//         data: result
-//     });
-// });
 
 export const rentalRequestController = {
     createRentalRequest,
     getRentalRequests,
     // getSingleRentalRequest,
     // getLandlordRentalRequests,
-    // updateRentalRequestStatus
+    updateRentalRequestStatus
 };

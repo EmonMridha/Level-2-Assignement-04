@@ -115,10 +115,7 @@ const loginUser = async (payload: { email: string, password: string }) => {
         config.jwt_refresh_expires_in as SignOptions
     )
 
-    return {
-        accessToken,
-        refreshToken
-    }
+    return { user, accessToken, refreshToken }
 }
 
 const myProfile = async (userId: string) => {

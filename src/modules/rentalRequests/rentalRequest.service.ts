@@ -1,3 +1,4 @@
+import { RentalRequestStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
 
@@ -119,8 +120,73 @@ const getRentalRequests = async (landlordId: string) => {
     return requests;
 };
 
+const updateRentalRequest = async (requestId: string, userId: string, status: RentalRequestStatus) => {
+
+    // Convert status to uppercase
+    const uppercaseStatus = status.toUpperCase() as RentalRequestStatus;
+
+    // Check status
+    if (uppercaseStatus !== "APPROVED" && uppercaseStatus !== "REJECTED") {
+        throw new Error("Status must be APPROVED or REJECTED");
+    }
+
+    // Find rental request
+    const rentalRequest = await prisma.rentalRequest.findUnique({
+        where: {
+            id: requestId
+        },
+        include: {
+            property: true
+        }
+    });
+
+    if (!rentalRequest) {
+        throw new Error("Rental request not found");
+    }
+
+    // Check ownership
+    if (rentalRequest.property.landlordId !== userId) {
+        throw new Error("You are not authorized to update this rental request");
+    }
+
+    // Prevent updating twice (optional but recommended)
+    if (rentalRequest.status !== "PENDING") {
+        throw new Error("This rental request has already been processed");
+    }
+
+    // Update status
+    const updatedRequest = await prisma.rentalRequest.update({
+        where: {
+            id: requestId
+        },
+        data: {
+            status: uppercaseStatus
+        },
+        include: {
+            tenant: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true
+                }
+            },
+            property: {
+                select: {
+                    id: true,
+                    title: true,
+                    city: true,
+                    rent: true
+                }
+            }
+        }
+    });
+
+    return updatedRequest;
+}
+
 
 export const rentalRequestService = {
     getRentalRequests,
-    createRentalRequest
+    createRentalRequest,
+    updateRentalRequest
 }
