@@ -143,6 +143,29 @@ const myRequests = async (userId: string) => {
     return requests
 }
 
+// Tenant
+const mySingleRequest = async (userId: string, requestId: string) => {
+    const request = await prisma.rentalRequest.findFirst({
+        where: {
+            id: requestId,
+            tenantId: userId
+        },
+        include: {
+            property: {
+                select: {
+                    id: true,
+                    title: true,
+                    city: true,
+                    rent: true,
+                    isAvailable: true
+                }
+            }
+        }
+    })
+
+    return request
+}
+
 // Landlord
 const updateRentalRequest = async (requestId: string, userId: string, status: RentalRequestStatus) => {
 
@@ -212,5 +235,6 @@ export const rentalRequestService = {
     getRentalRequests,
     createRentalRequest,
     updateRentalRequest,
-    myRequests
+    myRequests,
+    mySingleRequest
 }
