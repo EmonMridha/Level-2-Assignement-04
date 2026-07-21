@@ -16,7 +16,7 @@ const createRentalRequest = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-// Tenant
+// Public
 const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
     const landLordId = req.user?.id; //  Getting the user id from req
 
@@ -29,6 +29,7 @@ const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+//  Landlords
 const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
@@ -49,6 +50,17 @@ const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response)
     });
 });
 
+// Tenant
+const myRentalRequests = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const requests = await rentalRequestService.myRequests(userId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Rental requests retrieved successfully",
+        data: requests
+    });
+})
 // // Tenant
 // const getSingleRentalRequest = catchAsync(async (req: Request, res: Response) => {
 //     const tenantId = req.user!.id;
@@ -89,7 +101,6 @@ const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response)
 export const rentalRequestController = {
     createRentalRequest,
     getRentalRequests,
-    // getSingleRentalRequest,
-    // getLandlordRentalRequests,
-    updateRentalRequestStatus
+    updateRentalRequestStatus,
+    myRentalRequests
 };

@@ -1,7 +1,7 @@
 import { RentalRequestStatus } from "../../../generated/prisma/enums";
 import { prisma } from "../../lib/prisma";
 
-
+// Tenant
 const createRentalRequest = async (
     userId: string,
     payload: {
@@ -86,6 +86,7 @@ const createRentalRequest = async (
     return rentalRequest;
 };
 
+// Landlord
 const getRentalRequests = async (landlordId: string) => {
 
     const requests = await prisma.rentalRequest.findMany({
@@ -120,6 +121,29 @@ const getRentalRequests = async (landlordId: string) => {
     return requests;
 };
 
+// Tenant
+const myRequests = async (userId: string) => {
+    const requests = await prisma.rentalRequest.findMany({
+        where: {
+            tenantId: userId
+        },
+        include: {
+            property: {
+                select: {
+                    id: true,
+                    title: true,
+                    city: true,
+                    rent: true,
+                    isAvailable: true
+                }
+            }
+        }
+    })
+
+    return requests
+}
+
+// Landlord
 const updateRentalRequest = async (requestId: string, userId: string, status: RentalRequestStatus) => {
 
     // Convert status to uppercase
@@ -184,9 +208,9 @@ const updateRentalRequest = async (requestId: string, userId: string, status: Re
     return updatedRequest;
 }
 
-
 export const rentalRequestService = {
     getRentalRequests,
     createRentalRequest,
-    updateRentalRequest
+    updateRentalRequest,
+    myRequests
 }
