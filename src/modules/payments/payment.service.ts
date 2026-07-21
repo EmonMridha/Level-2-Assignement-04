@@ -56,7 +56,7 @@ const createCheckoutSession = async (
         success_url: `${process.env.CLIENT_URL}/payment/success`,
         cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
     });
-    
+
     return {
         sessionId: session.id,
         checkoutUrl: session.url

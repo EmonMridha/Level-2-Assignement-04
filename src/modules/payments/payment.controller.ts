@@ -11,8 +11,10 @@ const createCheckoutSession = catchAsync(async (req: Request, res: Response) => 
 
     res.status(httpStatus.CREATED).json({
         success: true,
-        message: "Checkout completed successfully",
-        data: result
+        message: "Checkout session created successfully",
+        data: {
+            checkoutUrl: result.checkoutUrl
+        }
     })
 })
 
