@@ -13,11 +13,35 @@ const createCheckoutSession = catchAsync(async (req: Request, res: Response) => 
         success: true,
         message: "Checkout session created successfully",
         data: {
-            checkoutUrl: result.checkoutUrl
+            checkoutUrl: result.checkoutUrl,
+            sessionId: result.sessionId
+
         }
     })
 })
 
+const confirmPayment = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+
+    const { sessionId } = req.body;
+
+    if (!sessionId) {
+        throw new Error("Session id is required");
+    }
+
+    const result = await paymentService.confirmPayment(
+        userId as string,
+        sessionId
+    );
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Payment verified successfully",
+        data: result
+    });
+});
+
 export const paymentController = {
-    createCheckoutSession
+    createCheckoutSession,
+    confirmPayment
 }

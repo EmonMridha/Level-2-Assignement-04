@@ -6,6 +6,10 @@ const createCheckoutSession = async (
     rentalRequestId: string
 ) => {
 
+    if (!rentalRequestId) {
+        throw new Error("Rental request id is required");
+    }
+
     // Find the rental request
     const rentalRequest = await prisma.rentalRequest.findFirst({
         where: {
@@ -63,6 +67,82 @@ const createCheckoutSession = async (
     };
 };
 
+const confirmPayment = async (
+    userId: string,
+    sessionId: string
+) => {
+
+    if (!sessionId) {
+        throw new Error("Session id is required");
+    }
+    // Retrieve checkout session from Stripe
+    const session = await stripe.checkout.sessions.retrieve(sessionId);
+
+    // Verify payment
+    if (session.payment_status !== "paid") {
+        throw new Error("Payment has not been completed");
+    }
+
+    // Read metadata
+    const rentalRequestId = session.metadata?.rentalRequestId;
+    const tenantId = session.metadata?.tenantId;
+
+    if (!rentalRequestId || !tenantId) {
+        throw new Error("Invalid payment session");
+    }
+
+    // Ensure the logged-in tenant owns this payment
+    if (tenantId !== userId) {
+        throw new Error("You are not authorized to verify this payment");
+    }
+
+    // Check rental request
+    const rentalRequest = await prisma.rentalRequest.findFirst({
+        where: {
+            id: rentalRequestId,
+            tenantId: userId,
+            status: "APPROVED"
+        }
+    });
+
+    if (!rentalRequest) {
+        throw new Error("Rental request not found");
+    }
+
+    // Prevent duplicate payment
+    const existingPayment = await prisma.payment.findUnique({
+        where: {
+            rentalRequestId
+        }
+    });
+
+    if (existingPayment) {
+        throw new Error("Payment has already been recorded");
+    }
+
+    // Save payment
+    const payment = await prisma.payment.create({
+        data: {
+            rentalRequestId,
+            transactionId: session.payment_intent as string,
+            amount: Number(session.amount_total!) / 100,
+            provider: "STRIPE",
+            status: "COMPLETED",
+            paidAt: new Date()
+        },
+        include: {
+            rentalRequest: {
+                include: {
+                    property: true
+                }
+            }
+        }
+    });
+
+    return payment;
+};
+
 export const paymentService = {
-    createCheckoutSession
+    createCheckoutSession,
+    confirmPayment
 }
