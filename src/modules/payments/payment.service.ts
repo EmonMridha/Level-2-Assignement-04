@@ -1,6 +1,8 @@
 import { prisma } from "../../lib/prisma"
 import { stripe } from "../../lib/stripe"
 
+
+// Tenant
 const createCheckoutSession = async (
     userId: string,
     rentalRequestId: string
@@ -67,6 +69,8 @@ const createCheckoutSession = async (
     };
 };
 
+
+// Tenant
 const confirmPayment = async (
     userId: string,
     sessionId: string
@@ -75,6 +79,7 @@ const confirmPayment = async (
     if (!sessionId) {
         throw new Error("Session id is required");
     }
+
     // Retrieve checkout session from Stripe
     const session = await stripe.checkout.sessions.retrieve(sessionId);
 
@@ -142,7 +147,68 @@ const confirmPayment = async (
     return payment;
 };
 
+
+// Tenant
+const paymentHistory = async (userId: string) => {
+    const histories = await prisma.payment.findMany({
+        where: {
+            rentalRequest: {
+                tenantId: userId
+            }
+        },
+        include: {
+            rentalRequest: {
+                include: {
+                    property: {
+                        select: {
+                            id: true,
+                            title: true,
+                            city: true,
+                            rent: true
+                        }
+                    }
+                }
+            }
+        },
+        orderBy: {
+            createdAt: "desc"
+        }
+    })
+
+    return histories
+}
+
+
+// Tenant 
+const singlePaymentHistory = async (historyId: string, userId: string) => {
+    const history = await prisma.payment.findFirst({
+        where: {
+            id: historyId,
+            rentalRequest: {
+                tenantId: userId
+            }
+        },
+        include: {
+            rentalRequest: {
+                include: {
+                    property: {
+                        select: {
+                            id: true,
+                            title: true,
+                            city: true,
+                            rent: true
+                        }
+                    }
+                }
+            }
+        }
+    })
+    return history
+}
+
 export const paymentService = {
     createCheckoutSession,
-    confirmPayment
+    confirmPayment,
+    paymentHistory,
+    singlePaymentHistory
 }

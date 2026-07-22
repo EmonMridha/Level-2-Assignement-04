@@ -3,6 +3,8 @@ import { catchAsync } from "../../utils/catchAsync";
 import { paymentService } from "./payment.service";
 import httpStatus from "http-status"
 
+
+// Tenant
 const createCheckoutSession = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id
     const { rentalRequestId } = req.body
@@ -20,6 +22,8 @@ const createCheckoutSession = catchAsync(async (req: Request, res: Response) => 
     })
 })
 
+
+// Tenant
 const confirmPayment = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id;
 
@@ -36,12 +40,40 @@ const confirmPayment = catchAsync(async (req: Request, res: Response) => {
 
     res.status(httpStatus.OK).json({
         success: true,
-        message: "Payment verified successfully",
+        message: "Payment verified and completed successfully! Congrats, you have successfully rented the property",
         data: result
     });
 });
 
+
+// Tenant
+const getPaymentHistory = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const histories = await paymentService.paymentHistory(userId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Payment verified and completed successfully! Congrats, you have successfully rented the property",
+        data: histories
+    });
+})
+
+
+const getSinglePaymentHistory = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const paymentId = req.params.id;
+    const history = await paymentService.singlePaymentHistory(paymentId as string, userId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Payment verified and completed successfully! Congrats, you have successfully rented the property",
+        data: history
+    });
+})
+
 export const paymentController = {
     createCheckoutSession,
-    confirmPayment
+    confirmPayment,
+    getPaymentHistory,
+    getSinglePaymentHistory
 }
