@@ -2,7 +2,7 @@ import bcrypt from "bcryptjs";
 import { prisma } from "../../lib/prisma";
 import config from "../../config";
 import { IUser } from "./userInterface";
-import jwt, { SignOptions } from "jsonwebtoken"
+import { SignOptions } from "jsonwebtoken"
 import { jwtUtils } from "../../utils/jwt";
 import { Role } from "../../../generated/prisma/enums";
 
@@ -126,8 +126,24 @@ const myProfile = async (userId: string) => {
     return user
 }
 
+const getAllUsers = async () => {
+    const users = await prisma.user.findMany({
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            role: true,
+            status: true,
+            createdAt: true
+        }
+    });
+
+    return users
+}
+
 export const userService = {
     createUser,
     loginUser,
-    myProfile
+    myProfile,
+    getAllUsers
 }

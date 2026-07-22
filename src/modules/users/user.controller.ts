@@ -69,8 +69,20 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 
 })
 
+const getAllUsers = catchAsync(async (req: Request, res: Response) => {
+    const users = await userService.getAllUsers();
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "All users retrieved successfully",
+        data: users
+    })
+})
+
 export const userController = {
     createUser,
     loginUser,
-    getMyProfile
+    getMyProfile,
+    getAllUsers
+
 }
