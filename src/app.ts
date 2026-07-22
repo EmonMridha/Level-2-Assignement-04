@@ -25,7 +25,6 @@ app.get("/", async (req: Request, res: Response) => {
 })
 
 app.use("/api/auth", userRoutes)
-app.use("/api/admin", userRoutes)
 app.use("/api/properties", propertyRoutes)
 app.use("/api/categories", categoryRoutes)
 app.use("/api/rentalRequests", rentalRequestRoutes)

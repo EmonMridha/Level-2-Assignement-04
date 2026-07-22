@@ -3,6 +3,7 @@ import { propertyController } from "./properties.controller";
 
 import { Role } from "../../../generated/prisma/enums";
 import { auth } from "../../middleware/auth";
+import { userController } from "../users/user.controller";
 
 const router = Router();
 

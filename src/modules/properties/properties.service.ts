@@ -128,6 +128,7 @@ const createProperty = async (
     return property;
 };
 
+// Public
 const getAllProperty = async (query: {
     city?: string;
     minPrice?: string;
@@ -319,8 +320,8 @@ const deleteProperty = async (id: string, landlordId: string) => {
     });
 
     if (!property) {
-    throw new Error("Property not found");
-}
+        throw new Error("Property not found");
+    }
 
     if (property.landlordId !== landlordId) {
         throw new Error("You are not authorized to delete this property");
@@ -334,10 +335,18 @@ const deleteProperty = async (id: string, landlordId: string) => {
     return;
 }
 
+
+// Admin
+const getAllProperties = async () => {
+    const properties = await prisma.property.findMany()
+    return properties
+}
+
 export const propertyService = {
     createProperty,
     getAllProperty,
     getSingleProperty,
     updateProperty,
-    deleteProperty
+    deleteProperty,
+    getAllProperties
 }

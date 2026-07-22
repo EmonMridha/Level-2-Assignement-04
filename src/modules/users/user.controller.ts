@@ -91,21 +91,11 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
-const allProperties = catchAsync(async (req: Request, res: Response) => {
-    const properties = await userService.getAllProperties()
-
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "All properties for ADMIN retrieved successfully!",
-        data: properties
-    });
-})
 
 export const userController = {
     createUser,
     loginUser,
     getMyProfile,
     getAllUsers,
-    updateUser,
-    allProperties
+    updateUser
 }

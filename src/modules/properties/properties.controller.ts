@@ -1,6 +1,8 @@
 import { Request, Response } from "express";
 import { propertyService } from "./properties.service";
 import { catchAsync } from "../../utils/catchAsync";
+import { userService } from "../users/user.service";
+import httpStatus from 'http-status'
 
 const createProperty = catchAsync(async (req: Request, res: Response) => {
     const payload = req.body
@@ -13,6 +15,7 @@ const createProperty = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+// Public
 const getAllProperties = async (req: Request, res: Response) => {
     const properties = await propertyService.getAllProperty(req.query);
     res.status(200).json({
@@ -21,6 +24,17 @@ const getAllProperties = async (req: Request, res: Response) => {
         data: properties
     });
 }
+
+// Admin
+const allProperties = catchAsync(async (req: Request, res: Response) => {
+    const properties = await propertyService.getAllProperties()
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "All properties for ADMIN retrieved successfully!",
+        data: properties
+    });
+})
 
 const getSingleProperty = async (req: Request, res: Response) => {
 
@@ -82,5 +96,6 @@ export const propertyController = {
     getAllProperties,
     getSingleProperty,
     updateProperty,
-    deleteProperty
+    deleteProperty,
+    allProperties
 }

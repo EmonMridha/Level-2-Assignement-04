@@ -29,6 +29,17 @@ const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
+// ADMIN
+const getAllRequests = catchAsync(async (req: Request, res: Response) => {
+    const requests = await rentalRequestService.allRequests()
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Rental requests retrieved successfully for ADMIN",
+        data: requests
+    });
+})
+
 //  Landlords
 const updateRentalRequestStatus = catchAsync(async (req: Request, res: Response) => {
     const userId = req.user?.id;
@@ -81,5 +92,6 @@ export const rentalRequestController = {
     getRentalRequests,
     updateRentalRequestStatus,
     myRentalRequests,
-    mySingleRentalRequest
+    mySingleRentalRequest,
+    getAllRequests
 };

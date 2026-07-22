@@ -121,6 +121,13 @@ const getRentalRequests = async (landlordId: string) => {
     return requests;
 };
 
+//ADMIN
+const allRequests = async () => {
+    const requests = await prisma.rentalRequest.findMany();
+
+    return requests;
+}
+
 // Tenant
 const myRequests = async (userId: string) => {
     const requests = await prisma.rentalRequest.findMany({
@@ -236,5 +243,6 @@ export const rentalRequestService = {
     createRentalRequest,
     updateRentalRequest,
     myRequests,
-    mySingleRequest
+    mySingleRequest,
+    allRequests
 }
