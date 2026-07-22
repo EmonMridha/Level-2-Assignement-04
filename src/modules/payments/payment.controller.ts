@@ -53,7 +53,7 @@ const getPaymentHistory = catchAsync(async (req: Request, res: Response) => {
 
     res.status(httpStatus.OK).json({
         success: true,
-        message: "Payment verified and completed successfully! Congrats, you have successfully rented the property",
+        message: "Payment history retrieved successfully!!!",
         data: histories
     });
 })
