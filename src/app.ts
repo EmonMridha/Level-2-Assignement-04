@@ -25,11 +25,11 @@ app.get("/", async (req: Request, res: Response) => {
 })
 
 app.use("/api/auth", userRoutes)
-app.use("/api/admin",userRoutes)
+app.use("/api/admin", userRoutes)
 app.use("/api/properties", propertyRoutes)
 app.use("/api/categories", categoryRoutes)
 app.use("/api/rentalRequests", rentalRequestRoutes)
 app.use("/api/payment", paymentRoutes)
-app.use("/api/reviews",reviewRoutes)
+app.use("/api/reviews", reviewRoutes)
 
 export default app;

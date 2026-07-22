@@ -173,10 +173,16 @@ const updateUser = async (id: string, status: UserStatus) => {
     return updatedUser;
 };
 
+const getAllProperties = async () => {
+    const properties = await prisma.property.findMany()
+    return properties
+}
+
 export const userService = {
     createUser,
     loginUser,
     myProfile,
     getAllUsers,
-    updateUser
+    updateUser,
+    getAllProperties
 }
