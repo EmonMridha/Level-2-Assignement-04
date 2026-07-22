@@ -79,10 +79,24 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     })
 })
 
+const updateUser = catchAsync(async (req: Request, res: Response) => {
+    const id = req.params.id;
+    const status = req.body.status;
+    const update = await userService.updateUser(id as string, status)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "User updated successfully!",
+        data: update
+    });
+
+})
+
 export const userController = {
     createUser,
     loginUser,
     getMyProfile,
-    getAllUsers
+    getAllUsers,
+    updateUser
 
 }

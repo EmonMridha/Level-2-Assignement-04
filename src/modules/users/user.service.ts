@@ -4,7 +4,7 @@ import config from "../../config";
 import { IUser } from "./userInterface";
 import { SignOptions } from "jsonwebtoken"
 import { jwtUtils } from "../../utils/jwt";
-import { Role } from "../../../generated/prisma/enums";
+import { Role, UserStatus } from "../../../generated/prisma/enums";
 
 
 const createUser = async (payload: IUser) => {
@@ -141,9 +141,42 @@ const getAllUsers = async () => {
     return users
 }
 
+const updateUser = async (id: string, status: UserStatus) => {
+
+    const uppercaseStatus = status.toUpperCase()
+    if (
+        uppercaseStatus !== UserStatus.ACTIVE &&
+        uppercaseStatus !== UserStatus.BLOCKED
+    ) {
+        throw new Error("Status must be ACTIVE or BLOCKED");
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: {
+            id
+        },
+        data: {
+            status: uppercaseStatus as UserStatus
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    return updatedUser;
+};
+
 export const userService = {
     createUser,
     loginUser,
     myProfile,
-    getAllUsers
+    getAllUsers,
+    updateUser
 }
