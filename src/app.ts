@@ -8,6 +8,7 @@ import { categoryRoutes } from "./modules/categories/category.routes";
 import { rentalRequestRoutes } from "./modules/rentalRequests/rentalRequest.routes";
 import { paymentRoutes } from "./modules/payments/payment.routes";
 import { reviewRoutes } from "./modules/reviews/reviews.routes";
+import httpStatus from "http-status";
 
 const app: Application = express();
 
@@ -32,3 +33,14 @@ app.use("/api/payment", paymentRoutes)
 app.use("/api/reviews", reviewRoutes)
 
 export default app;
+
+app.use((req, res) => {
+    res.status(httpStatus.NOT_FOUND).json({
+        success: false,
+        message: "Route not found",
+        errorDetails: {
+            message: "Route not found"
+        }
+    });
+});
+

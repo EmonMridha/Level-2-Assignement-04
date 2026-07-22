@@ -143,12 +143,29 @@ const getAllUsers = async () => {
 
 const updateUser = async (id: string, status: UserStatus) => {
 
+    if (!status) {
+        throw new Error("Status is required");
+    }
+
+    if (!id) {
+        throw new Error("User ID is required");
+    }
+
     const uppercaseStatus = status.toUpperCase()
+
     if (
         uppercaseStatus !== UserStatus.ACTIVE &&
         uppercaseStatus !== UserStatus.BLOCKED
     ) {
         throw new Error("Status must be ACTIVE or BLOCKED");
+    }
+
+    const user = await prisma.user.findUnique({
+        where: { id }
+    });
+
+    if (!user) {
+        throw new Error("User not found");
     }
 
     const updatedUser = await prisma.user.update({

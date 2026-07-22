@@ -18,6 +18,10 @@ const createRentalRequest = async (
         throw new Error("Property id is required");
     }
 
+    if (message && message.trim() === "") {
+        throw new Error("Message cannot be empty");
+    }
+
     if (!moveInDate) {
         throw new Error("Move in date is required");
     }
@@ -175,6 +179,14 @@ const mySingleRequest = async (userId: string, requestId: string) => {
 
 // Landlord
 const updateRentalRequest = async (requestId: string, userId: string, status: RentalRequestStatus) => {
+
+    if (!status) {
+        throw new Error("Status is required");
+    }
+
+    if (!requestId) {
+        throw new Error("Rental request ID is required");
+    }
 
     // Convert status to uppercase
     const uppercaseStatus = status.toUpperCase() as RentalRequestStatus;

@@ -1,15 +1,26 @@
 import { prisma } from "../../lib/prisma"
 import { IReview } from "./reviews.interface";
 
-
-
 const createReview = async (userId: string, payload: IReview) => {
 
     const { propertyId, rating, comment } = payload;
 
+    if (!propertyId) {
+        throw new Error("Property ID is required");
+    }
+
+    if (rating === undefined || rating === null) {
+        throw new Error("Rating is required");
+    }
+
+    if (!comment || comment.trim() === "") {
+        throw new Error("Comment is required");
+    }
+
     if (rating < 1 || rating > 5) {
         throw new Error("Rating must be between 1 and 5");
     }
+
 
     // Verify the tenant has successfully rented this property
     const completedRental = await prisma.rentalRequest.findFirst({

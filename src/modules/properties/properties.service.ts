@@ -88,6 +88,22 @@ const createProperty = async (
         throw new Error("Amenities must be an array");
     }
 
+    if (rent <= 0) {
+        throw new Error("Rent must be greater than 0");
+    }
+
+    if (bedrooms < 1) {
+        throw new Error("Bedrooms must be at least 1");
+    }
+
+    if (bathrooms < 1) {
+        throw new Error("Bathrooms must be at least 1");
+    }
+
+    if (amenities.some(a => a.trim() === "")) {
+        throw new Error("Amenities cannot contain empty values");
+    }
+
     // Business validation
     const category = await prisma.category.findUnique({
         where: {
@@ -220,6 +236,28 @@ const getSingleProperty = async (id: string) => {
 
 const updateProperty = async (id: string, landlordId: string, updates: IUpdateProperty) => {
 
+    if (!id) {
+        throw new Error("Property ID is required");
+    }
+
+    if (updates.amenities !== undefined) {
+        if (!Array.isArray(updates.amenities)) {
+            throw new Error("Amenities must be an array");
+        }
+
+        if (updates.amenities.length === 0) {
+            throw new Error("At least one amenity is required");
+        }
+
+        if (
+            updates.amenities.some(
+                amenity => typeof amenity !== "string" || amenity.trim() === ""
+            )
+        ) {
+            throw new Error("Amenities must contain non-empty strings");
+        }
+    }
+
     const property = await prisma.property.findUniqueOrThrow({
         where: {
             id: id
@@ -268,12 +306,6 @@ const updateProperty = async (id: string, landlordId: string, updates: IUpdatePr
     if (updates.bathrooms !== undefined) {
         if (typeof updates.bathrooms !== "number" || updates.bathrooms < 1) {
             throw new Error("Bathrooms must be at least 1");
-        }
-    }
-
-    if (updates.amenities !== undefined) {
-        if (!Array.isArray(updates.amenities)) {
-            throw new Error("Amenities must be an array");
         }
     }
 

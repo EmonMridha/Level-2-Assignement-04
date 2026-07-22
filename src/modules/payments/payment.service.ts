@@ -69,7 +69,6 @@ const createCheckoutSession = async (
     };
 };
 
-
 // Tenant
 const confirmPayment = async (
     userId: string,
@@ -147,7 +146,6 @@ const confirmPayment = async (
     return payment;
 };
 
-
 // Tenant
 const paymentHistory = async (userId: string) => {
     const histories = await prisma.payment.findMany({
@@ -177,7 +175,6 @@ const paymentHistory = async (userId: string) => {
 
     return histories
 }
-
 
 // Tenant 
 const singlePaymentHistory = async (historyId: string, userId: string) => {
