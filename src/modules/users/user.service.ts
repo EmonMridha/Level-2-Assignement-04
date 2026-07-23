@@ -137,6 +137,7 @@ const getAllUsers = async () => {
     return users
 }
 
+// ADMIN
 const updateUser = async (id: string, status: UserStatus) => {
 
     if (!status) {
@@ -186,11 +187,65 @@ const updateUser = async (id: string, status: UserStatus) => {
     return updatedUser;
 };
 
+// Public
+const manageUser = async (userId: string, payload: Partial<IUser>) => {
+
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
+
+    const { name, phone } = payload;
+
+    // Check user exists
+    const user = await prisma.user.findUnique({
+        where: { id: userId }
+    });
+
+    if (!user) {
+        throw new Error("User not found");
+    }
+
+    // Name validation
+    if (name !== undefined) {
+        if (typeof name !== "string" || name.trim() === "") {
+            throw new Error("Name cannot be empty");
+        }
+    }
+
+    // Phone validation
+    if (phone !== undefined) {
+        if (typeof phone !== "string" || phone.trim() === "") {
+            throw new Error("Phone number cannot be empty");
+        }
+    }
+
+    const updatedUser = await prisma.user.update({
+        where: { id: userId },
+        data: {
+            name,
+            phone
+        },
+        select: {
+            id: true,
+            name: true,
+            email: true,
+            phone: true,
+            role: true,
+            status: true,
+            createdAt: true,
+            updatedAt: true
+        }
+    });
+
+    return updatedUser;
+};
+
 
 export const userService = {
     createUser,
     loginUser,
     myProfile,
     getAllUsers,
-    updateUser
+    updateUser,
+    manageUser
 }

@@ -91,11 +91,25 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
+const manageUser = catchAsync(async (req: Request, res: Response) => {
+
+    const userId = req.user?.id;
+    const payload = req.body;
+    const updateUser = await userService.manageUser(userId as string, payload)
+
+    res.status(httpStatus.CREATED).json({
+        success: true,
+        message: "User logged in successfully",
+        data: updateUser
+    })
+})
+
 
 export const userController = {
     createUser,
     loginUser,
     getMyProfile,
     getAllUsers,
-    updateUser
+    updateUser,
+    manageUser
 }
