@@ -16,7 +16,7 @@ const createRentalRequest = catchAsync(async (req: Request, res: Response) => {
     });
 });
 
-// Public
+// Landlord
 const getRentalRequests = catchAsync(async (req: Request, res: Response) => {
     const landLordId = req.user?.id; //  Getting the user id from req
 
@@ -77,6 +77,10 @@ const myRentalRequests = catchAsync(async (req: Request, res: Response) => {
 const mySingleRentalRequest = catchAsync(async (req: Request, res: Response) => {
     const requestId = req.params.id;
     const userId = req.user?.id;
+
+    if (!requestId) {
+        throw new Error("Rental request ID is required");
+    }
 
     const singleRequest = await rentalRequestService.mySingleRequest(userId as string, requestId as string)
 

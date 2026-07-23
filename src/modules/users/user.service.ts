@@ -15,10 +15,6 @@ const createUser = async (payload: IUser) => {
         throw new Error("Invalid role");
     }
 
-    if (role === Role.ADMIN) {
-        throw new Error("You cannot register as an admin");
-    }
-
     if (!name || name.trim() === "") {
         throw new Error("Name is required");
     }

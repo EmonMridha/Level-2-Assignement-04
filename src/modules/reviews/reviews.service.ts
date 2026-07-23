@@ -12,6 +12,9 @@ const createReview = async (userId: string, payload: IReview) => {
     if (rating === undefined || rating === null) {
         throw new Error("Rating is required");
     }
+    if (typeof rating !== "number") {
+        throw new Error("Rating must be a number");
+    }
 
     if (!comment || comment.trim() === "") {
         throw new Error("Comment is required");
@@ -20,8 +23,6 @@ const createReview = async (userId: string, payload: IReview) => {
     if (rating < 1 || rating > 5) {
         throw new Error("Rating must be between 1 and 5");
     }
-
-
     // Verify the tenant has successfully rented this property
     const completedRental = await prisma.rentalRequest.findFirst({
         where: {

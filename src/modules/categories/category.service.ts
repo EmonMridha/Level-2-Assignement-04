@@ -8,9 +8,15 @@ const getAllCategory = async () => {
 
 // Admin(create category)
 const createCategory = async (payload: { name: string }) => {
+
+
+    if (!payload.name || typeof payload.name !== "string") {
+        throw new Error("Category name is required");
+    }
+
     const name = payload.name.trim().toUpperCase();
 
-    if (!name || name.trim() === "") {
+    if (name === "") {
         throw new Error("Category name is required");
     }
 
@@ -36,11 +42,21 @@ const createCategory = async (payload: { name: string }) => {
 // Admin
 const updateCategory = async (id: string, payload: { name: string }
 ) => {
-    const categoryName = payload.name.trim().toUpperCase();
 
-    if (!categoryName) {
+    if (!id) {
+        throw new Error("Category ID is required");
+    }
+
+    if (!payload.name || typeof payload.name !== "string") {
         throw new Error("Category name is required");
     }
+
+    const categoryName = payload.name.trim().toUpperCase();
+
+    if (categoryName === "") {
+        throw new Error("Category name is required");
+    }
+
 
     // Check if category exists
     const category = await prisma.category.findUnique({

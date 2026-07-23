@@ -26,6 +26,10 @@ const createRentalRequest = async (
         throw new Error("Move in date is required");
     }
 
+    if (!moveInDate || isNaN(new Date(moveInDate).getTime())) {
+        throw new Error("Valid move in date is required");
+    }
+
     // Check property exists
     const property = await prisma.property.findUnique({
         where: {
@@ -174,7 +178,12 @@ const mySingleRequest = async (userId: string, requestId: string) => {
         }
     })
 
-    return request
+    if (!request) {
+        throw new Error("Rental request not found");
+    }
+
+    return request;
+
 }
 
 // Landlord
