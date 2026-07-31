@@ -47,7 +47,7 @@ const loginUser = catchAsync(async (req: Request, res: Response) => {
     res.status(httpStatus.CREATED).json({
         success: true,
         message: "User logged in successfully",
-        data: { user }
+        data: { accessToken, refreshToken }
     })
 })
 
