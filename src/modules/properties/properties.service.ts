@@ -150,6 +150,7 @@ const getAllProperty = async (query: {
     minPrice?: string;
     maxPrice?: string;
     category?: string;
+    amenities?: string[];
 }) => {
 
     const filter: any = {
@@ -184,6 +185,13 @@ const getAllProperty = async (query: {
                 equals: query.category,
                 mode: "insensitive"
             }
+        };
+    }
+
+    // Filter by amenities
+    if (query.amenities?.length) {
+        filter.amenities = {
+            hasSome: query.amenities,
         };
     }
 
