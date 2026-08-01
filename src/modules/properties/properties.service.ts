@@ -189,9 +189,13 @@ const getAllProperty = async (query: {
     }
 
     // Filter by amenities
-    if (query.amenities?.length) {
+    if (query.amenities) {
+        const amenities = Array.isArray(query.amenities)
+            ? query.amenities
+            : [query.amenities];
+
         filter.amenities = {
-            hasSome: query.amenities,
+            hasSome: amenities,
         };
     }
 
