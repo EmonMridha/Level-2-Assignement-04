@@ -22,7 +22,7 @@ declare global {
 
 export const auth = (...requiredRoles: Role[]) => {
     return catchAsync(async (req: Request, res: Response, next: Function) => {
-        const accessToken = req.cookies.accessToken ? req.cookies.accessToken : req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization?.split(" ")[1] : req.headers.authorization
+        const accessToken = req.cookies.accessToken ? req.cookies.accessToken : req.headers.authorization?.startsWith("Bearer ") ? req.headers.authorization?.split(" ")[1] : req.headers.authorization // getting accessToken from cookies or headers
 
         if (!accessToken) {
             throw new Error("Your are not logged in. Please login first")
@@ -32,7 +32,7 @@ export const auth = (...requiredRoles: Role[]) => {
         const verifiedToken = jwtUtils.verifyToken(accessToken, config.jwt_access_secret)
 
         if (!verifiedToken.success) {
-            throw new Error("Problem occured verifying token")
+            throw new Error("Problem occurred verifying token")
         }
 
         const { email, name, id, role } = verifiedToken.data as JwtPayload
@@ -41,6 +41,7 @@ export const auth = (...requiredRoles: Role[]) => {
             throw new Error("Forbidden. You don't have permission to access this route")
         }
 
+        // finding the user in the database
         const user = await prisma.user.findUnique({
             where: {
                 id,
@@ -66,6 +67,5 @@ export const auth = (...requiredRoles: Role[]) => {
         }
         next()
     }
-
     )
 }

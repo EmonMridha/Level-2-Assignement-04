@@ -59,8 +59,8 @@ const createCheckoutSession = async (
             tenantId: userId
         },
 
-        success_url: `${process.env.CLIENT_URL}/payment/success`,
-        cancel_url: `${process.env.CLIENT_URL}/payment/cancel`
+        success_url: `${process.env.CLIENT_URL}/tenant-dashboard/payment/success?session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url: `${process.env.CLIENT_URL}/tenant-dashboard/payment/cancel`,
     });
 
     return {
