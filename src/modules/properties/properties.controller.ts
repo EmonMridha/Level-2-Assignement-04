@@ -54,6 +54,10 @@ const getSingleProperty = async (req: Request, res: Response) => {
 
 const getMyProperties = async (req: Request, res: Response) => {
     const userId = req.user?.id
+
+    if (!userId) {
+        throw new Error("User ID is required");
+    }
     const properties = await propertyService.getMyProperties(userId as string)
 
     res.status(200).json({

@@ -203,9 +203,27 @@ const singlePaymentHistory = async (historyId: string, userId: string) => {
     return history
 }
 
+const totalEarnings = async (userId: string) => {
+    const totalEarnings = await prisma.payment.aggregate({
+        _sum: {
+            amount: true
+        },
+        where: {
+            rentalRequest: {
+                property: {
+                    landlordId: userId
+                }
+            }
+        }
+    });
+
+    return totalEarnings._sum.amount || 0;
+};
+
 export const paymentService = {
     createCheckoutSession,
     confirmPayment,
     paymentHistory,
-    singlePaymentHistory
+    singlePaymentHistory,
+    totalEarnings
 }

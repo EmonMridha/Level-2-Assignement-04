@@ -70,9 +70,21 @@ const getSinglePaymentHistory = catchAsync(async (req: Request, res: Response) =
     });
 })
 
+const getTotalEarnings = catchAsync(async (req: Request, res: Response) => {
+    const userId = req.user?.id;
+    const totalEarnings = await paymentService.totalEarnings(userId as string)
+
+    res.status(httpStatus.OK).json({
+        success: true,
+        message: "Total earnings retrieved successfully",
+        data: totalEarnings
+    });
+})
+
 export const paymentController = {
     createCheckoutSession,
     confirmPayment,
     getPaymentHistory,
-    getSinglePaymentHistory
+    getSinglePaymentHistory,
+    getTotalEarnings
 }
