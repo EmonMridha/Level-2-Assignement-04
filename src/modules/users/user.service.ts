@@ -122,19 +122,31 @@ const myProfile = async (userId: string) => {
     return user
 }
 
-const getAllUsers = async () => {
-    const users = await prisma.user.findMany({
-        select: {
-            id: true,
-            name: true,
-            email: true,
-            role: true,
-            status: true,
-            createdAt: true
-        }
-    });
+const getAllUsers = async (page: number = 1, limit: number = 5) => {
+    const skip = (page - 1) * limit
 
-    return users
+    const [users, total] = await prisma.$transaction([
+        prisma.user.findMany({
+            skip,
+            take: limit,
+            select: {
+                id: true,
+                name: true,
+                email: true,
+                role: true,
+                status: true,
+                createdAt: true
+            }
+        }),
+        prisma.user.count()
+    ])
+
+    return {
+        data: users,
+        total,
+        page,
+        totalPages: Math.ceil(total / limit)
+    }
 }
 
 // ADMIN

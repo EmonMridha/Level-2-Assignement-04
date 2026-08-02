@@ -70,15 +70,22 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 })
 
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-    const users = await userService.getAllUsers();
+    const page = parseInt(req.query.page as string) || 1
+    const limit = parseInt(req.query.limit as string) || 5
+
+    const result = await userService.getAllUsers(page, limit)
 
     res.status(httpStatus.OK).json({
         success: true,
         message: "All users retrieved successfully",
-        data: users
+        data: result.data,
+        total: result.total,
+        page: result.page,
+        totalPages: result.totalPages
     })
 })
 
+// admin
 const updateUser = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
     const status = req.body.status;
@@ -91,6 +98,7 @@ const updateUser = catchAsync(async (req: Request, res: Response) => {
     });
 })
 
+// user itself
 const manageUser = catchAsync(async (req: Request, res: Response) => {
 
     const userId = req.user?.id;
