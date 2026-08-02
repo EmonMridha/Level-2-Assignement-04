@@ -122,6 +122,7 @@ const myProfile = async (userId: string) => {
     return user
 }
 
+//admin
 const getAllUsers = async (page: number = 1, limit: number = 5) => {
     const skip = (page - 1) * limit
 
