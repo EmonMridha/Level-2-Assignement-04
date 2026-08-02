@@ -386,11 +386,22 @@ const getAllProperties = async () => {
     return properties
 }
 
+// landlord
+const getMyProperties = async (userId: string) => {
+    const properties = await prisma.property.findMany({
+        where: {
+            landlordId: userId
+        }
+    })
+    return properties
+}
+
 export const propertyService = {
     createProperty,
     getAllProperty,
     getSingleProperty,
     updateProperty,
     deleteProperty,
-    getAllProperties
+    getAllProperties,
+    getMyProperties
 }

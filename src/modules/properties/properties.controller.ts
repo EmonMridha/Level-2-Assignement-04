@@ -52,6 +52,18 @@ const getSingleProperty = async (req: Request, res: Response) => {
     });
 }
 
+const getMyProperties = async (req: Request, res: Response) => {
+    const userId = req.user?.id
+    const properties = await propertyService.getMyProperties(userId as string)
+
+    res.status(200).json({
+        success: true,
+        message: "My properties retrieved successfully",
+        data: properties
+    });
+}
+
+
 const updateProperty = catchAsync(async (req: Request, res: Response) => {
     const id = req.params.id;
 
@@ -96,5 +108,6 @@ export const propertyController = {
     getSingleProperty,
     updateProperty,
     deleteProperty,
-    allProperties
+    allProperties,
+    getMyProperties
 }
