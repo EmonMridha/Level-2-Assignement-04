@@ -8,8 +8,8 @@ const router = Router();
 
 router.post("/", auth(Role.ADMIN, Role.LANDLORD), propertyController.createProperty)
 router.get("/", propertyController.getAllProperties)
-router.get("/:id", propertyController.getSingleProperty)
 router.get('/myProperties', auth("LANDLORD"), propertyController.getMyProperties)
+router.get("/:id", propertyController.getSingleProperty)
 router.patch("/:id", auth(Role.LANDLORD, Role.ADMIN), propertyController.updateProperty)
 router.delete("/:id", auth(Role.LANDLORD, Role.ADMIN), propertyController.deleteProperty)
 
