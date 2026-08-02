@@ -124,38 +124,38 @@ const myProfile = async (userId: string) => {
 
 //admin
 const getAllUsers = async (page: number = 1, limit: number = 5, search: string = '') => {
-    const skip = (page - 1) * limit
+  const skip = (page - 1) * limit
+  
+  const where = search ? {
+    OR: [
+      { name: { contains: search, mode: 'insensitive' as const } },
+      { email: { contains: search, mode: 'insensitive' as const } }
+    ]
+  } : {}
 
-    const where = search ? {
-        OR: [
-            { name: { contains: search, mode: 'insensitive' as const } },
-            { email: { contains: search, mode: 'insensitive' as const } }
-        ]
-    } : {}
+  const [users, total] = await prisma.$transaction([
+    prisma.user.findMany({
+      where,
+      skip,
+      take: limit,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        status: true,
+        createdAt: true
+      }
+    }),
+    prisma.user.count({ where })
+  ])
 
-    const [users, total] = await prisma.$transaction([
-        prisma.user.findMany({
-            where,
-            skip,
-            take: limit,
-            select: {
-                id: true,
-                name: true,
-                email: true,
-                role: true,
-                status: true,
-                createdAt: true
-            }
-        }),
-        prisma.user.count({ where })
-    ])
-
-    return {
-        data: users,
-        total,
-        page,
-        totalPages: Math.ceil(total / limit)
-    }
+  return {
+    data: users,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit)
+  }
 }
 
 // ADMIN

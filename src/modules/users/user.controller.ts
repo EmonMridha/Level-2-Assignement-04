@@ -71,20 +71,20 @@ const getMyProfile = catchAsync(async (req: Request, res: Response) => {
 
 // admin
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-    const page = parseInt(req.query.page as string) || 1
-    const limit = parseInt(req.query.limit as string) || 5
-    const search = (req.query.search as string) || ''
+  const page = parseInt(req.query.page as string) || 1
+  const limit = parseInt(req.query.limit as string) || 5
+  const search = (req.query.search as string) || ''
+  
+  const result = await userService.getAllUsers(page, limit, search)
 
-    const result = await userService.getAllUsers(page, limit, search)
-
-    res.status(httpStatus.OK).json({
-        success: true,
-        message: "All users retrieved successfully",
-        data: result.data,
-        total: result.total,
-        page: result.page,
-        totalPages: result.totalPages
-    })
+  res.status(httpStatus.OK).json({
+    success: true,
+    message: "All users retrieved successfully",
+    data: result.data,
+    total: result.total,
+    page: result.page,
+    totalPages: result.totalPages
+  })
 })
 
 // admin
