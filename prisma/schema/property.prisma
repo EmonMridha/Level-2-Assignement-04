@@ -20,6 +20,8 @@ model Property {
     categoryId String
     category   Category @relation(fields: [categoryId], references: [id])
 
+    images PropertyImage[]
+
     rentalRequests RentalRequest[]
     reviews        Review[]
 

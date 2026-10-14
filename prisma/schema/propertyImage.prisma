@@ -1,0 +1,17 @@
+model PropertyImage {
+    id       String  @id @default(uuid())
+    url      String
+    publicId String? // 👈 add this (recommended, not required)
+
+    altText   String?
+    sortOrder Int     @default(0)
+    isPrimary Boolean @default(false)
+
+    propertyId String
+    property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+
+    createdAt DateTime @default(now())
+
+    @@index([propertyId])
+    @@map("property_images")
+}
