@@ -1,11 +1,7 @@
 import { prisma } from "../../lib/prisma"
 import { IProperty, IUpdateProperty } from "./properties.interface";
 
-const createProperty = async (
-    landlordId: string,
-    payload: IProperty
-) => {
-
+const createProperty = async (landlordId: string, payload: IProperty) => {
     const {
         title,
         description,
@@ -15,132 +11,95 @@ const createProperty = async (
         bedrooms,
         bathrooms,
         amenities,
-        categoryId
+        categoryId,
+        images,
     } = payload;
 
-    // Required field validation
-    if (!title || title.trim() === "") {
-        throw new Error("Title is required");
+    // ---- Type validation FIRST ----
+    if (typeof title !== "string" || title.trim() === "") {
+        throw new Error("Title is required and must be a string");
     }
-
-    if (!description || description.trim() === "") {
-        throw new Error("Description is required");
+    if (typeof description !== "string" || description.trim() === "") {
+        throw new Error("Description is required and must be a string");
     }
-
-    if (!address || address.trim() === "") {
-        throw new Error("Address is required");
+    if (typeof address !== "string" || address.trim() === "") {
+        throw new Error("Address is required and must be a string");
     }
-
-    if (!city || city.trim() === "") {
-        throw new Error("City is required");
+    if (typeof city !== "string" || city.trim() === "") {
+        throw new Error("City is required and must be a string");
     }
-
-    if (rent === undefined || rent === null) {
-        throw new Error("Rent is required");
+    if (typeof rent !== "number" || rent <= 0) {
+        throw new Error("Rent must be a number greater than 0");
     }
-
-    if (bedrooms === undefined || bedrooms === null) {
-        throw new Error("Bedrooms are required");
+    if (typeof bedrooms !== "number" || bedrooms < 1) {
+        throw new Error("Bedrooms must be a number >= 1");
     }
-
-    if (bathrooms === undefined || bathrooms === null) {
-        throw new Error("Bathrooms are required");
+    if (typeof bathrooms !== "number" || bathrooms < 1) {
+        throw new Error("Bathrooms must be a number >= 1");
     }
-
-    if (!amenities || amenities.length === 0) {
+    if (!Array.isArray(amenities) || amenities.length === 0) {
         throw new Error("At least one amenity is required");
     }
-
-    if (!categoryId) {
+    if (amenities.some((a) => typeof a !== "string" || a.trim() === "")) {
+        throw new Error("Amenities cannot contain empty values");
+    }
+    if (typeof categoryId !== "string" || categoryId.trim() === "") {
         throw new Error("Category is required");
     }
 
-    // Type validation
-    if (typeof title !== "string") {
-        throw new Error("Title must be a string");
+    // ---- Image validation ----
+    if (!Array.isArray(images) || images.length === 0) {
+        throw new Error("At least one image is required");
     }
-
-    if (typeof description !== "string") {
-        throw new Error("Description must be a string");
+    if (images.length > 10) {
+        throw new Error("Maximum 10 images allowed");
     }
-
-    if (typeof address !== "string") {
-        throw new Error("Address must be a string");
-    }
-
-    if (typeof city !== "string") {
-        throw new Error("City must be a string");
-    }
-
-    if (typeof rent !== "number") {
-        throw new Error("Rent must be a number");
-    }
-
-    if (typeof bedrooms !== "number") {
-        throw new Error("Bedrooms must be a number");
-    }
-
-    if (typeof bathrooms !== "number") {
-        throw new Error("Bathrooms must be a number");
-    }
-
-    if (!Array.isArray(amenities)) {
-        throw new Error("Amenities must be an array");
-    }
-
-    if (rent <= 0) {
-        throw new Error("Rent must be greater than 0");
-    }
-
-    if (bedrooms < 1) {
-        throw new Error("Bedrooms must be at least 1");
-    }
-
-    if (bathrooms < 1) {
-        throw new Error("Bathrooms must be at least 1");
-    }
-
-    if (amenities.some(a => a.trim() === "")) {
-        throw new Error("Amenities cannot contain empty values");
-    }
-
-    // Business validation
-    const category = await prisma.category.findUnique({
-        where: {
-            id: categoryId
+    for (const img of images) {
+        if (!img || typeof img.url !== "string" || img.url.trim() === "") {
+            throw new Error("Each image must have a valid url");
         }
-    });
+    }
 
+    // check if category exists
+    const category = await prisma.category.findUnique({
+        where: { id: categoryId },
+    });
     if (!category) {
         throw new Error("Category not found");
     }
 
-    // Create property
+    // ---- Create ----
     const property = await prisma.property.create({
         data: {
-            title,
-            description,
-            address,
-            city,
+            title: title.trim(),
+            description: description.trim(),
+            address: address.trim(),
+            city: city.trim(),
             rent,
             bedrooms,
             bathrooms,
             amenities,
             landlordId,
-            categoryId
+            categoryId,
+            images: {
+                create: images.map((img, index) => ({
+                    url: img.url,
+                    publicId: img.publicId,
+                    isPrimary: index === 0,
+                    order: index,
+                })),
+            },
         },
         include: {
             landlord: {
-                select: {
-                    id: true,
-                    name: true,
-                    email: true
-                }
+                select: { id: true, name: true, email: true },
             },
-            category: true
-        }
+            category: true,
+            images: {
+                select: { url: true, publicId: true, isPrimary: true, order: true } // returns all image fields
+            }
+        },
     });
-
     return property;
 };
 
@@ -208,7 +167,8 @@ const getAllProperty = async (query: {
                     email: true
                 }
             },
-            category: true
+            category: true,
+            images: true
         }
     });
 

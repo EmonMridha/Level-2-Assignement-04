@@ -1,10 +1,9 @@
 model PropertyImage {
-    id       String  @id @default(uuid())
-    url      String
-    publicId String? // 👈 add this (recommended, not required)
-
+    id        String  @id @default(uuid())
+    url       String
+    publicId  String?
     altText   String?
-    sortOrder Int     @default(0)
+    order     Int     @default(0) // 👈 renamed
     isPrimary Boolean @default(false)
 
     propertyId String
