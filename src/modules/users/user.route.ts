@@ -12,4 +12,4 @@ router.get("/me", auth('ADMIN', 'LANDLORD', 'TENANT'), userController.getMyProfi
 router.get("/admin/properties", auth("ADMIN"), propertyController.allProperties)
 router.patch("/updateMe", auth('ADMIN', 'LANDLORD', 'TENANT'), userController.manageUser)
 router.patch("/users/:id", auth('ADMIN'), userController.updateUser)
-export const userRoutes = router
+export const userRoutes: Router = router

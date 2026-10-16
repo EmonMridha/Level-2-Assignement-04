@@ -11,4 +11,4 @@ router.get("/myRequests", auth("TENANT"), rentalRequestController.myRentalReques
 router.get("/myRequests/:id", auth("TENANT"), rentalRequestController.mySingleRentalRequest)
 router.patch("/:id", auth("LANDLORD","ADMIN"), rentalRequestController.updateRentalRequestStatus)
 
-export const rentalRequestRoutes = router
+export const rentalRequestRoutes: Router = router

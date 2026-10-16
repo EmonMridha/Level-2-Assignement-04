@@ -13,4 +13,4 @@ router.get("/:id", propertyController.getSingleProperty)
 router.patch("/:id", auth(Role.LANDLORD, Role.ADMIN), propertyController.updateProperty)
 router.delete("/:id", auth(Role.LANDLORD, Role.ADMIN), propertyController.deleteProperty)
 
-export const propertyRoutes = router
+export const propertyRoutes: Router = router;

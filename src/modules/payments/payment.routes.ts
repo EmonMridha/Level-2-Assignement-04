@@ -15,4 +15,4 @@ router.get('/histories/:id', auth("TENANT"), paymentController.getSinglePaymentH
 router.get('/totalEarnings', auth("LANDLORD"), paymentController.getTotalEarnings)
 
 
-export const paymentRoutes = router
+export const paymentRoutes: Router = router
