@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "",
   "license": "ISC",
-  "author": "",
+  "author": "Emon Mridha",
   "type": "module",
   "main": "server.ts",
   "scripts": {
